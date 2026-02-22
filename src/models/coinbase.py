@@ -1,6 +1,7 @@
 from decimal import Decimal
 from pydantic import BaseModel
 
+
 class Ticker(BaseModel):
     product_id: str
     price: Decimal
@@ -9,5 +10,4 @@ class Ticker(BaseModel):
     best_bid_quantity: Decimal
     best_ask_quantity: Decimal
 
-    model_config = {"extra":"allow"}
-
+    model_config = {"extra": "allow"}

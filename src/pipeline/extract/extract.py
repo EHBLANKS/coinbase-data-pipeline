@@ -6,7 +6,7 @@ from logging import Logger
 logger = Logger("Coinbase")
 
 
-def extract_data(message:str):
+def extract_data(message: str) -> Ticker | None:
     try:
         msg = loads(message)
         data = Ticker.model_validate(msg["events"][0]["tickers"][0])
@@ -17,5 +17,3 @@ def extract_data(message:str):
 
     except Exception as e:
         logger.warning(f"couldn't validate: {e}")
-
-
