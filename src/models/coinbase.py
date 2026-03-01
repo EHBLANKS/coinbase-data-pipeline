@@ -11,3 +11,9 @@ class Ticker(BaseModel):
     best_ask_quantity: Decimal
 
     model_config = {"extra": "allow"}
+
+
+class EnrichedTicker(Ticker):
+    spread: str
+    mid: str
+    imbalance: str

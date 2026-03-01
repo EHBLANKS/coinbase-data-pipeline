@@ -11,8 +11,6 @@ def write_parquet(payload: str) -> None:
     if payload == "":
         return
 
-    print(buffer)
-    print(len(buffer))
     now = datetime.now()
     buffer.append(
         {

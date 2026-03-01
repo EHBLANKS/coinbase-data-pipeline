@@ -3,24 +3,24 @@ from os import getenv
 from coinbase.websocket import WSClient
 from pipeline.extract.extract import extract_data
 from pipeline.utils.file import write_parquet
+from kafka.publisher import publish_msg
 
 load_dotenv()
 
 
 def main():
-
     api_key = getenv("CDP_API_KEY_ID", "")
     api_secret = getenv("CDP_API_KEY_SECRET", "")
 
     def on_message(raw_msg):
-        data = extract_data(raw_msg)
+        ticker = extract_data(raw_msg)
 
-        # Writes raw message to buffer, if enough data
+        # save in in disk
         write_parquet(raw_msg)
 
-        # send data to kakfa/nats
-
-        pass
+        # send message to kafka and nats
+        if ticker:
+            publish_msg(ticker.product_id,raw_msg)
 
     ws_client = WSClient(
         api_key=api_key,
@@ -29,22 +29,18 @@ def main():
         verbose=True,
     )
 
-    # open client
     ws_client.open()
 
-    # listen/subscribe to a ticker
     ws_client.subscribe(
-        [
-            "BTC-USD",
-            "ADA-USD",
-            "ETH-USD",
-            "XRP-USD",
-            "SOL-USD",
-        ],
+        ["BTC-USD", "ADA-USD", "ETH-USD", "XRP-USD", "SOL-USD"],
         ["ticker"],
     )
+
     ws_client.run_forever_with_exception_check()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("closing...")

@@ -1,4 +1,3 @@
-import pyarrow
 from models.coinbase import Ticker
 from json import JSONDecodeError, loads
 from logging import Logger
@@ -6,10 +5,13 @@ from logging import Logger
 logger = Logger("Coinbase")
 
 
-def extract_data(message: str) -> Ticker | None:
+def extract_data(message: str | bytes) -> Ticker | None:
     try:
         msg = loads(message)
-        data = Ticker.model_validate(msg["events"][0]["tickers"][0])
+        tickers = msg.get("events", [{}])[0].get("tickers")
+        if not tickers:
+            return None
+        data = Ticker.model_validate(tickers[0])
         return data
 
     except JSONDecodeError as e:
@@ -17,3 +19,7 @@ def extract_data(message: str) -> Ticker | None:
 
     except Exception as e:
         logger.warning(f"couldn't validate: {e}")
+
+
+
+
