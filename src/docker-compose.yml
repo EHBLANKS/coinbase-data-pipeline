@@ -43,8 +43,21 @@ services:
       "
     restart: on-failure
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    volumes:
+      - ./clickhouse/init:/docker-entrypoint-initdb.d
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+
   nats:
     image: nats:latest
+    container_name: nats
     ports:
       - "4222:4222"
 
